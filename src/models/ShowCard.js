@@ -4,7 +4,7 @@ export default class ShowCard {
 
   constructor(state) {
     this.#state = state;
-    console.log(state);
+    // console.log(state);
     this.createElement();
   }
 

@@ -1,15 +1,19 @@
 import settings from "@core/settings";
+import GenersList from "./GenersList";
 import ShowCard from "./ShowCard";
 
 export default class ShowsList {
   #SHOWS_URL;
   #shows;
-  #showsList;
   #geners;
+  #container;
+  #showsList;
+  #genersList;
 
-  constructor() {
+  constructor(container) {
     this.#SHOWS_URL = settings.showsURL;
     this.#geners = [];
+    this.#container = container;
   }
 
   async getUrlInformation(url) {
@@ -30,11 +34,28 @@ export default class ShowsList {
   }
 
   createListElement(show) {
+    show.genres.forEach((gener) =>
+      !this.#geners.includes(gener) ? this.#geners.push(gener) : ""
+    );
+
     const li = new ShowCard(show);
     return li.render();
   }
 
-  render(container) {
+  setGenerList(gener) {
+    document.querySelector(".shows__list").remove();
+    this.#showsList.innerHTML = "";
+    console.log(this.#shows);
+    this.#shows.forEach((show) => {
+      if (show.genres.includes(gener)) {
+        this.#showsList.append(this.createListElement(show));
+        console.log(this.#showsList);
+      }
+    });
+    this.#container.append(this.#showsList);
+  }
+
+  render() {
     this.getUrlInformation(this.#SHOWS_URL)
       .then((shows) => {
         this.#shows = shows;
@@ -43,15 +64,16 @@ export default class ShowsList {
         this.#showsList.className = "shows__list";
 
         this.#shows.forEach((show) => {
-          show.genres.forEach((gener) =>
-            !this.#geners.includes(gener) ? this.#geners.push(gener) : ""
-          );
-          
           this.#showsList.append(this.createListElement(show));
         });
       })
       .finally(() => {
-        container.append(this.#showsList);
+        this.#genersList = new GenersList(
+          this.#geners,
+          this.setGenerList.bind(this)
+        );
+        this.#genersList.render();
+        this.#container.append(this.#showsList);
       });
   }
 }

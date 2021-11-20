@@ -2,14 +2,13 @@ import ShowsList from "./ShowsList";
 
 export default class App {
   #showsList;
-  #listContainer;
 
   constructor() {
-    this.#showsList = new ShowsList();
-    this.#listContainer = document.querySelector("#list-container");
+    this.listContainer = document.querySelector("#list-container");
+    this.#showsList = new ShowsList(this.listContainer);
   }
 
   run() {
-    this.#showsList.render(this.#listContainer);
+    this.#showsList.render();
   }
 }

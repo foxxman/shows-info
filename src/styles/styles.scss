@@ -3,14 +3,17 @@
 
 /*===========STYLES FILES==========*/
 @import "main";
+@import "selectboxes";
+
 /*=================================*/
 
-body{
+body {
   background-color: $base-color;
 }
 
 .container {
+  margin-top: 20px;
   max-width: 1400px;
   width: 100%;
   margin: auto;
-};
+}
