@@ -7,24 +7,23 @@ export default class GenersList {
   constructor(geners, setGenerList) {
     this.setGenerList = setGenerList;
     this.#geners = geners;
-    this.#genersMenu = document.querySelector("#dropdown-menu");
+    this.#genersMenu = document.querySelector("#dropdown-menu-geners");
   }
 
   initListener() {
-    const dropdownMenu = document.querySelector(".dropdown .dropdown-menu");
     const activeGener = document.querySelector("#active-gener");
     /*Dropdown Menu*/
-    $(".dropdown").click(function () {
+    $("#dropdown-geners").click(function () {
       $(this).attr("tabindex", 1).focus();
       $(this).toggleClass("active");
       $(this).find(".dropdown-menu").slideToggle(300);
     });
-    $(".dropdown").focusout(function () {
+    $("#dropdown-geners").focusout(function () {
       $(this).removeClass("active");
       $(this).find(".dropdown-menu").slideUp(300);
     });
 
-    dropdownMenu.addEventListener("click", (event) => {
+    this.#genersMenu.addEventListener("click", (event) => {
       const { target } = event;
       const li = target.closest("li");
       if (li) {
