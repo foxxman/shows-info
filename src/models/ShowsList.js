@@ -1,12 +1,15 @@
 import settings from "@core/settings";
+import ShowCard from "./ShowCard";
 
 export default class ShowsList {
   #SHOWS_URL;
   #shows;
   #showsList;
+  #geners;
 
   constructor() {
     this.#SHOWS_URL = settings.showsURL;
+    this.#geners = [];
   }
 
   async getUrlInformation(url) {
@@ -17,7 +20,7 @@ export default class ShowsList {
       const response = await fetch(url);
       if (!response.ok) throw new Error("data not received");
       information = await response.json();
-    //   console.log(information);
+      //   console.log(information);
     } catch {
       console.log("Error: ", error);
     } finally {
@@ -27,13 +30,8 @@ export default class ShowsList {
   }
 
   createListElement(show) {
-    const li = document.createElement("li");
-    li.className = "shows__list__item";
-    li.id = `show-${show.id}`;
-
-    li.innerHTML = `${show.name}`;
-
-    return li;
+    const li = new ShowCard(show);
+    return li.render();
   }
 
   render(container) {
@@ -45,11 +43,15 @@ export default class ShowsList {
         this.#showsList.className = "shows__list";
 
         this.#shows.forEach((show) => {
+          show.genres.forEach((gener) =>
+            !this.#geners.includes(gener) ? this.#geners.push(gener) : ""
+          );
+          
           this.#showsList.append(this.createListElement(show));
         });
       })
       .finally(() => {
         container.append(this.#showsList);
       });
-  } 
+  }
 }

@@ -1,0 +1,66 @@
+.shows__list {
+  margin-top: 32px;
+  list-style: none;
+  &__item {
+    background-color: $card-color;
+    display: flex;
+    box-sizing: border-box;
+    border-radius: 16px;
+    margin-bottom: 64px;
+    padding: 30px;
+
+    &-image {
+      border-radius: 5px;
+      height: 100%;
+      width: auto;
+    }
+
+    &-info {
+      padding: 10px 40px 0px 35px;
+      font-size: 18px;
+      line-height: 27px;
+      color: #374a59;
+      display: flex;
+      flex-direction: column;
+
+      h2 {
+        font-family: $film-card-h2;
+        font-size: 40px;
+        line-height: 46px;
+        margin-bottom: 15px;
+      }
+      &-point {
+        margin-bottom: 15px;
+      }
+    }
+
+    &-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .running-serial {
+        color: $running-serial-color;
+        font-weight: 600;
+      }
+      .ended-serial {
+        color: $ended-serial-color;
+        font-weight: 600;
+      }
+    }
+    &-rating {
+      font-weight: 600;
+      color: $primary-color;
+
+      padding: 5px 15px;
+      border: 2px solid $primary-color;
+      border-radius: 22px;
+    }
+    &-more {
+      font-weight: 600;
+      color: $primary-color;
+      //   text-align: right;
+      margin-left: auto;
+      text-decoration: none;
+    }
+  }
+}

@@ -1,11 +1,16 @@
-@import "~normalize.css";
+@import "standart";
+@import "variables";
+
+/*===========STYLES FILES==========*/
+@import "main";
+/*=================================*/
+
+body{
+  background-color: $base-color;
+}
 
 .container {
   max-width: 1400px;
   width: 100%;
   margin: auto;
-}
-
-.shows__list{
-  list-style: none;
-}
+};
