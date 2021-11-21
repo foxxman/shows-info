@@ -19,6 +19,8 @@ export default class ShowsList {
     this.#SHOWS_URL = settings.showsURL;
     this.#geners = [];
     this.#statuses = [];
+    this.#shows = [];
+    this.#state = [];
     this.#listFilters = {
       status: "",
       category: "",
@@ -36,11 +38,12 @@ export default class ShowsList {
       const response = await fetch(url);
       if (!response.ok) throw new Error("data not received");
       information = await response.json();
-      //   console.log(information);
     } catch {
       console.log("Error: ", error);
     } finally {
       isLoading = true;
+      // console.log("incoming information");
+      // information.forEach((info) => console.log(info));
       return information;
     }
   }
@@ -51,34 +54,25 @@ export default class ShowsList {
   }
 
   setGenerList(gener) {
-    if (document.querySelector(".shows__list"))
-      document.querySelector(".shows__list").remove();
-    this.#showsList.innerHTML = "";
-    console.log(this.#showsList);
-    this.#shows.forEach((show) => {
-      if (show.genres.includes(gener)) {
-        this.#showsList.append(this.createListElement(show));
-      }
-    });
-    this.#container.append(this.#showsList);
+    const stateCopy = [...this.#state]
+    this.#state.splice(0, this.#state.length);
+
+    this.#state.push(...stateCopy.filter((show) => show.genres.includes(gener)));
+    this.makeShowList();
   }
 
   setStatusesList(status) {
-    if (document.querySelector(".shows__list"))
-      document.querySelector(".shows__list").remove();
-    console.log(this.#showsList);
-    this.#showsList.innerHTML = "";
-    this.#shows.forEach((show) => {
-      if (show.status === status) {
-        this.#showsList.append(this.createListElement(show));
-      }
-    });
-    this.#container.append(this.#showsList);
+    const stateCopy = [...this.#state]
+
+    this.#state.splice(0, this.#state.length);
+    this.#state.push(...stateCopy.filter((show) => show.status === status));
+    this.makeShowList();
   }
 
   makeShowList() {
     if (document.querySelector(".shows__list"))
       document.querySelector(".shows__list").remove();
+
     this.#showsList.innerHTML = "";
 
     this.#state.forEach((show) => {
@@ -91,8 +85,9 @@ export default class ShowsList {
   render() {
     this.getUrlInformation(this.#SHOWS_URL)
       .then((shows) => {
-        this.#shows = shows;
-        this.#state = shows;
+        this.#shows.push(...shows);
+        this.#state.push(...shows);
+
         shows.forEach((show) => {
           show.genres.forEach((gener) =>
             !this.#geners.includes(gener) ? this.#geners.push(gener) : ""

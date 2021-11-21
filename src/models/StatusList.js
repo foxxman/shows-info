@@ -34,8 +34,6 @@ export default class StatusesList {
   }
 
   render() {
-    console.log(this.#statuses);
-    this.#statuses.forEach((status) => console.log(status));
     this.#statuses.forEach((status) => {
       const li = document.createElement("li");
       li.id = `${status}`;
