@@ -20,26 +20,8 @@
   </head>
   <body>
     <div id="list-container" class="container">
-      <!-- GENER FILTER -->
-      <div class="dropdown" id="dropdown-geners">
-        <div class="select">
-          <span id='active-gener'>Gener Filter</span>
-          <i class="fa fa-chevron-left"></i>
-        </div>
-        <input type="hidden" name="gener" />
-        <ul id="dropdown-menu-geners" class="dropdown-menu">
-        </ul>
-      </div>
-      <!-- STSTUS FILTER -->
-      <div class="dropdown" id="dropdown-statuses">
-        <div class="select">
-          <span id='active-status'>Status Filter</span>
-          <i class="fa fa-chevron-left"></i>
-        </div>
-        <input type="hidden" name="gener" />
-        <ul id="dropdown-menu-statuses" class="dropdown-menu">
-        </ul>
-      </div>
+      <div id="filters-container" class="filters-container"></div>
+      <button id="filters-remove" class="filters__remove">Remove All Filters</button>
     </div>
   </body>
 </html>

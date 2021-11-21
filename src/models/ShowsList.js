@@ -1,30 +1,35 @@
 import settings from "@core/settings";
-import GenersList from "./GenersList";
+import FilterDropdown from "./FilterDropdown";
 import ShowCard from "./ShowCard";
-import StatusesList from "./StatusList";
 
 export default class ShowsList {
   #SHOWS_URL;
   #shows;
+  #state;
+
   #container;
   #showsList;
-  #genersList;
-  #statusesList;
-  #state;
-  #listFilters;
-  #geners;
-  #statuses;
+
+  #activeFilters;
+  #filtersToCreate;
+  #createdFilters;
+  #filtersArrays;
 
   constructor(container) {
     this.#SHOWS_URL = settings.showsURL;
-    this.#geners = [];
-    this.#statuses = [];
+    this.#filtersToCreate = ["genres", "status", "language"];
+    this.#filtersArrays = {};
+
+    this.#filtersToCreate.forEach(
+      (filterToCreate) => (this.#filtersArrays[filterToCreate] = [])
+    );
+
+    this.#createdFilters = [];
+
     this.#shows = [];
     this.#state = [];
-    this.#listFilters = {
-      status: "",
-      category: "",
-    };
+
+    this.#activeFilters = {};
     this.#container = container;
     this.#showsList = document.createElement("ul");
     this.#showsList.className = "shows__list";
@@ -42,8 +47,6 @@ export default class ShowsList {
       console.log("Error: ", error);
     } finally {
       isLoading = true;
-      // console.log("incoming information");
-      // information.forEach((info) => console.log(info));
       return information;
     }
   }
@@ -53,19 +56,55 @@ export default class ShowsList {
     return li.render();
   }
 
-  setGenerList(gener) {
-    const stateCopy = [...this.#state]
+  setFilterList(filter, value) {
+    // очищаем state и заполняем его всеми элементами, без фильтров
     this.#state.splice(0, this.#state.length);
+    this.#state.push(...this.#shows);
 
-    this.#state.push(...stateCopy.filter((show) => show.genres.includes(gener)));
-    this.makeShowList();
-  }
+    // если свойства заданы - фильтруем
+    if (filter && value) {
+      // добавить или изменить значение фильтра
+      this.#activeFilters[filter] = value;
 
-  setStatusesList(status) {
-    const stateCopy = [...this.#state]
+      //итерация по названиям фильтров(ключи объекта массивов активных фильтров)
+      Object.keys(this.#activeFilters).forEach((key) => {
+        // создаем копию state, а его очищаем
+        const stateCopy = [...this.#state];
+        this.#state.splice(0, this.#state.length);
 
-    this.#state.splice(0, this.#state.length);
-    this.#state.push(...stateCopy.filter((show) => show.status === status));
+        // создаем новый массив из stateCopy на основе итерируемого фильтра
+        // и добавляем все его элементы в пустой state
+        this.#state.push(
+          ...stateCopy.filter((show) => {
+            const filterType = typeof show[key];
+            let status;
+            // console.log(show[key], this.#activeFilters[key]);
+
+            // фильтр в зависимости от типа его значения
+            switch (filterType) {
+              // массив
+              case "object":
+                status = show[key].includes(this.#activeFilters[key]);
+                break;
+              //строка
+              case "string":
+                status = show[key] === this.#activeFilters[key];
+                break;
+              default:
+                break;
+            }
+            // console.log(status);
+            return status;
+          })
+        );
+      });
+    } else {
+      // если свойства не заданы - очищаем фильтры
+      Object.keys(this.#activeFilters).forEach((key) => {
+        delete this.#activeFilters[key];
+      });
+    }
+
     this.makeShowList();
   }
 
@@ -88,30 +127,41 @@ export default class ShowsList {
         this.#shows.push(...shows);
         this.#state.push(...shows);
 
+        // заполнение объекта с массивами фильтров
         shows.forEach((show) => {
-          show.genres.forEach((gener) =>
-            !this.#geners.includes(gener) ? this.#geners.push(gener) : ""
-          );
-
-          !this.#statuses.includes(show.status)
-            ? this.#statuses.push(show.status)
-            : "";
+          this.#filtersToCreate.forEach((filterToCreate) => {
+            //если это массив
+            if (typeof show[filterToCreate] === "object") {
+              show[filterToCreate].forEach((filterItem) => {
+                !this.#filtersArrays[filterToCreate].includes(filterItem)
+                  ? this.#filtersArrays[filterToCreate].push(filterItem)
+                  : "";
+              });
+            } else {
+              // если что-то другое
+              !this.#filtersArrays[filterToCreate].includes(
+                show[filterToCreate]
+              )
+                ? this.#filtersArrays[filterToCreate].push(show[filterToCreate])
+                : "";
+            }
+          });
         });
       })
       .finally(() => {
-        this.#genersList = new GenersList(
-          this.#geners,
-          this.setGenerList.bind(this)
-        );
-
-        this.#statusesList = new StatusesList(
-          this.#statuses,
-          this.setStatusesList.bind(this)
-        );
-
-        this.#genersList.render();
-        this.#statusesList.render();
-
+        // рендер полей фильтров
+        Object.keys(this.#filtersArrays).forEach((filterName, index) => {
+          this.#createdFilters.push(
+            new FilterDropdown(
+              filterName,
+              this.#filtersArrays[filterName],
+              this.setFilterList.bind(this)
+            )
+          );
+          // console.log(this.#createdFilters);
+          this.#createdFilters[index].render();
+        });
+        // рендер полей фильтров
         this.makeShowList();
       });
   }
